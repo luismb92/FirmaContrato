@@ -1,0 +1,44 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Firma de Contrato</title>
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+</head>
+<body>
+    <h2>Firma el contrato</h2>
+    <canvas id="signature-pad" width=500 height=200 style="border:1px solid #000;"></canvas><br>
+    <input type="text" id="nombre" placeholder="Tu nombre" />
+    <button id="clear">Limpiar</button>
+    <button id="save">Firmar</button>
+
+    <script>
+        const canvas = document.getElementById('signature-pad');
+        const signaturePad = new SignaturePad(canvas);
+        document.getElementById('clear').addEventListener('click', () => signaturePad.clear());
+
+        document.getElementById('save').addEventListener('click', async () => {
+            const nombre = document.getElementById('nombre').value;
+            if (!nombre) return alert('Por favor, escribe tu nombre.');
+            if (signaturePad.isEmpty()) return alert('Por favor, firma el contrato.');
+
+            const dataURL = signaturePad.toDataURL();
+            const response = await fetch('/Contrato/firmar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nombre, firma: dataURL })
+            });
+
+            const blob = await response.blob();
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'Contrato_Firmado.pdf';
+            link.click();
+
+            signaturePad.clear();
+            document.getElementById('nombre').value = '';
+        });
+    </script>
+</body>
+</html>

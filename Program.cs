@@ -4,7 +4,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 var app = builder.Build();
-// Serve archivos est·ticos (como index.html en wwwroot)
+// Serve archivos est√°ticos (como index.html en wwwroot)
 app.UseStaticFiles();
 // Swagger solo en desarrollo
 if (app.Environment.IsDevelopment())
@@ -17,4 +17,6 @@ app.UseAuthorization();
 app.MapControllers();
 // Ruta por defecto (opcional: sirve index.html si entras sin ruta)
 app.MapFallbackToFile("index.html");
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+app.Urls.Add($"http://*:{port}");
 app.Run();
